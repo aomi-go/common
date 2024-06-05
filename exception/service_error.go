@@ -1,0 +1,62 @@
+package exception
+
+import (
+	"fmt"
+	"github.com/aomi-go/common/exception/errorcode"
+)
+
+type ServiceError struct {
+	// Code 错误代码
+	Code string
+	// Msg 错误描述
+	Msg string
+	// 错误返回的数据
+	Payload any
+	// 堆栈
+	Stack error
+}
+
+// 实现 error 接口的 Error() 方法
+func (e *ServiceError) Error() string {
+	return fmt.Sprintf("[%s][%s][%v]", e.Code, e.Msg, e.Payload)
+}
+
+func NewFullError(code string, msg string, payload any, stack error) *ServiceError {
+	return &ServiceError{
+		Code:    code,
+		Msg:     msg,
+		Payload: payload,
+		Stack:   stack,
+	}
+}
+
+func NewError(msg string, payload any) *ServiceError {
+	return NewFullError(
+		errorcode.EXCEPTION,
+		msg,
+		payload,
+		nil,
+	)
+}
+
+func NewErrorWithStack(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.EXCEPTION,
+		msg,
+		payload,
+		stack,
+	)
+}
+
+func NewParamsError(msg string, payload any) *ServiceError {
+	return NewParamsErrorWithStack(msg, payload, nil)
+}
+
+func NewParamsErrorWithStack(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.ParamsError,
+		msg,
+		payload,
+		stack,
+	)
+}
