@@ -60,3 +60,21 @@ func NewParamsErrorWithStack(msg string, payload any, stack error) *ServiceError
 		stack,
 	)
 }
+
+func NewResourceExist(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.ResourceExist,
+		msg,
+		payload,
+		stack,
+	)
+}
+
+func NewResourceNotExist(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.ResourceNotExist,
+		msg,
+		payload,
+		stack,
+	)
+}
