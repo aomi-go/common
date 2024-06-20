@@ -61,6 +61,33 @@ func NewParamsErrorWithStack(msg string, payload any, stack error) *ServiceError
 	)
 }
 
+func NewUnauthorized(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.Unauthorized,
+		msg,
+		payload,
+		stack,
+	)
+}
+
+func NewBadCredentials(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.BadCredentials,
+		msg,
+		payload,
+		stack,
+	)
+}
+
+func NewAccessDenied(msg string, payload any, stack error) *ServiceError {
+	return NewFullError(
+		errorcode.AccessDenied,
+		msg,
+		payload,
+		stack,
+	)
+}
+
 func NewResourceExist(msg string, payload any, stack error) *ServiceError {
 	return NewFullError(
 		errorcode.ResourceExist,
