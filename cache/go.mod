@@ -1,4 +1,4 @@
-module cache
+module github.com/aomi-go/common/cache
 
 go 1.21.6
 
