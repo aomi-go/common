@@ -44,3 +44,7 @@ func (b Helper) Value(v any) Helper {
 func (b Helper) Set() error {
 	return b.c.Set(b.ctx, b.entry.Key, b.v, b.entry.Ttl)
 }
+
+func (b Helper) Get(value interface{}) error {
+	return b.c.Get(b.ctx, b.entry.Key, value)
+}
