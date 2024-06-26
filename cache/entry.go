@@ -10,8 +10,8 @@ func NewEntry(key string, ttl time.Duration) Entry {
 }
 
 type Entry struct {
-	Key string
-	Ttl time.Duration
+	Key string        `json:"key" yaml:"key"`
+	Ttl time.Duration `json:"ttl" yaml:"ttl"`
 }
 
 func (e Entry) SetKeySuffix(suffix string) Entry {
