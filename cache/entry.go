@@ -1,9 +1,20 @@
 package cache
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
-// Entry 用于存储缓存值及其过期时间
+func NewEntry(key string, ttl time.Duration) Entry {
+	return Entry{Key: key, Ttl: ttl}
+}
+
 type Entry struct {
-	Value     interface{}
-	ExpiresAt time.Time
+	Key string
+	Ttl time.Duration
+}
+
+func (e Entry) SetKeySuffix(suffix string) Entry {
+	e.Key = fmt.Sprintf("%s:%s", e.Key, suffix)
+	return e
 }

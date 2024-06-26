@@ -1,8 +1,8 @@
 package redis
 
 import (
-	"cache"
 	"context"
+	"github.com/aomi-go/common/cache"
 	"github.com/redis/go-redis/v9"
 	"time"
 )

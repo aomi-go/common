@@ -1,10 +1,10 @@
 package memory
 
 import (
-	"cache"
 	"context"
 	"errors"
 	"github.com/allegro/bigcache/v3"
+	"github.com/aomi-go/common/cache"
 	"reflect"
 	"sync"
 	"time"
@@ -45,7 +45,7 @@ func (m *Cache) Get(ctx context.Context, key string, value interface{}) error {
 		return err
 	}
 
-	var entry cache.Entry
+	var entry MemoryEntry
 	err = cache.Deserialize(data, &entry)
 	if err != nil {
 		return err
@@ -68,7 +68,7 @@ func (m *Cache) Get(ctx context.Context, key string, value interface{}) error {
 }
 
 func (m *Cache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
-	entry := cache.Entry{
+	entry := MemoryEntry{
 		Value:     value,
 		ExpiresAt: time.Now().Add(ttl),
 	}
