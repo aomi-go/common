@@ -20,3 +20,11 @@ func Find[T any](v []T, predicate func(item T) bool) []T {
 
 	return result
 }
+
+func Map[T any, R any](s []T, f func(T) R) []R {
+	var result []R
+	for _, item := range s {
+		result = append(result, f(item))
+	}
+	return result
+}
