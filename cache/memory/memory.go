@@ -40,7 +40,7 @@ func (m *Cache) Get(ctx context.Context, key string, value interface{}) error {
 	data, err := m.provider.Get(key)
 	if err != nil {
 		if errors.Is(err, bigcache.ErrEntryNotFound) {
-			return nil
+			return cache.ErrEntryNotFound
 		}
 		return err
 	}
@@ -97,7 +97,11 @@ func (m *Cache) Increment(ctx context.Context, key string, value int64, ttl time
 	var currentValue int64
 	err := m.Get(ctx, key, &currentValue)
 	if err != nil {
-		return 0, err
+		if errors.Is(err, cache.ErrEntryNotFound) {
+			currentValue = 0
+		} else {
+			return 0, err
+		}
 	}
 
 	var newValue = currentValue + value
@@ -117,7 +121,7 @@ func (m *Cache) IncrementByFloat(ctx context.Context, key string, value float64,
 	var currentValue float64
 	err := m.Get(ctx, key, &currentValue)
 	if err != nil {
-		if errors.Is(err, bigcache.ErrEntryNotFound) {
+		if errors.Is(err, cache.ErrEntryNotFound) {
 			currentValue = float64(0)
 		} else {
 			return 0, err

@@ -8,6 +8,7 @@ import (
 
 var (
 	ValueNotNilPointer = errors.New("value must be a non-nil pointer")
+	ErrEntryNotFound   = errors.New("Entry not found")
 )
 
 // Cache 缓存服务接口
