@@ -30,6 +30,15 @@ func NewFullError(code string, msg string, payload any, stack error) *ServiceErr
 	}
 }
 
+func NewPartialSuccess(msg string, payload any, stack error) *ServiceError {
+	return &ServiceError{
+		Code:    errorcode.PartialSuccess,
+		Msg:     msg,
+		Payload: payload,
+		Stack:   stack,
+	}
+}
+
 func NewError(msg string, payload any) *ServiceError {
 	return NewFullError(
 		errorcode.EXCEPTION,
