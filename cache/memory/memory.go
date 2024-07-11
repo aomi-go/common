@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/allegro/bigcache/v3"
 	"github.com/aomi-go/common/cache"
-	"reflect"
 	"sync"
 	"time"
 )
@@ -45,7 +44,7 @@ func (m *Cache) Get(ctx context.Context, key string, value interface{}) error {
 		return err
 	}
 
-	var entry MemoryEntry
+	var entry Entry
 	err = cache.Deserialize(data, &entry)
 	if err != nil {
 		return err
@@ -53,23 +52,24 @@ func (m *Cache) Get(ctx context.Context, key string, value interface{}) error {
 
 	if time.Now().After(entry.ExpiresAt) {
 		_ = m.provider.Delete(key)
-		return bigcache.ErrEntryNotFound
+		return cache.ErrEntryNotFound
 	}
 
-	// 使用反射将 entry.Value 赋值给 value
-	val := reflect.ValueOf(value)
-	if val.Kind() != reflect.Ptr || val.IsNil() {
-		return cache.ValueNotNilPointer
+	err = cache.Deserialize(entry.Value, value)
+	if err != nil {
+		return err
 	}
-
-	val.Elem().Set(reflect.ValueOf(entry.Value))
 
 	return nil
 }
 
 func (m *Cache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
-	entry := MemoryEntry{
-		Value:     value,
+	valueBuf, err := cache.Serialize(value)
+	if err != nil {
+		return err
+	}
+	entry := Entry{
+		Value:     valueBuf.Bytes(),
 		ExpiresAt: time.Now().Add(ttl),
 	}
 
@@ -98,7 +98,7 @@ func (m *Cache) Increment(ctx context.Context, key string, value int64, ttl time
 	err := m.Get(ctx, key, &currentValue)
 	if err != nil {
 		if errors.Is(err, cache.ErrEntryNotFound) {
-			currentValue = 0
+			currentValue = int64(0)
 		} else {
 			return 0, err
 		}
