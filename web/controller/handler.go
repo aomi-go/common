@@ -32,7 +32,7 @@ func DefaultSuccessHandler() SuccessHandler {
 }
 
 func DefaultErrHandler() ErrorHandler {
-	return func(c *gin.Context, err error) {
+	return func(c *gin.Context, payload any, err error) {
 
 		reqId := c.GetHeader(http2.RequestId)
 
@@ -57,10 +57,15 @@ func DefaultErrHandler() ErrorHandler {
 
 		var e *exception.ServiceError
 		if errors.As(err, &e) {
+			p := e.Payload
+			if e.Code == errorcode.PartialSuccess {
+				p = payload
+			}
+
 			c.JSON(http.StatusOK, dto.Result{
 				Status:    e.Code,
 				Describe:  e.Msg,
-				Payload:   e.Payload,
+				Payload:   p,
 				RequestId: reqId,
 			})
 			return
@@ -79,7 +84,7 @@ type SuccessHandler func(c *gin.Context, payload any)
 
 // ErrorHandler 错误处理器
 // @return int 错误码 any 错误数据
-type ErrorHandler func(c *gin.Context, err error)
+type ErrorHandler func(c *gin.Context, payload any, err error)
 
 type Handler struct {
 
@@ -112,7 +117,7 @@ func (h *Handler) Wrapper(handler interface{}) func(c *gin.Context) {
 		if nil == err {
 			h.success(c, res)
 		} else {
-			h.err(c, err)
+			h.err(c, res, err)
 		}
 	}
 }
