@@ -317,6 +317,10 @@ func (l ZapLog) Skip() Log {
 	return l
 }
 
+func NewZapLogger(provider *zap.Logger) *ZapLogger {
+	return &ZapLogger{provider: provider}
+}
+
 type ZapLogger struct {
 	provider *zap.Logger
 }
