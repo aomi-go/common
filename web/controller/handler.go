@@ -110,6 +110,8 @@ func (h *Handler) Wrapper(handler interface{}) func(c *gin.Context) {
 		switch handler := handler.(type) {
 		case func(c *gin.Context):
 			handler(c)
+		case func(c *gin.Context) error:
+			err = handler(c)
 		case func(c *gin.Context) (interface{}, error):
 			res, err = handler(c)
 		}
