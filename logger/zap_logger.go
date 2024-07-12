@@ -187,6 +187,21 @@ func (l ZapLog) Int8s(key string, value []int8) Log {
 	return l
 }
 
+func (l ZapLog) Int(key string, value int) Log {
+	l.fields = append(l.fields, zap.Int(key, value))
+	return l
+}
+
+func (l ZapLog) Intp(key string, value *int) Log {
+	l.fields = append(l.fields, zap.Intp(key, value))
+	return l
+}
+
+func (l ZapLog) Ints(key string, value []int) Log {
+	l.fields = append(l.fields, zap.Ints(key, value))
+	return l
+}
+
 func (l ZapLog) String(key string, value string) Log {
 	l.fields = append(l.fields, zap.String(key, value))
 	return l
@@ -274,6 +289,21 @@ func (l ZapLog) Uint8p(key string, value *uint8) Log {
 
 func (l ZapLog) Uint8s(key string, value []uint8) Log {
 	l.fields = append(l.fields, zap.Uint8s(key, value))
+	return l
+}
+
+func (l ZapLog) Uint(key string, value uint) Log {
+	l.fields = append(l.fields, zap.Uint(key, value))
+	return l
+}
+
+func (l ZapLog) Uintp(key string, value *uint) Log {
+	l.fields = append(l.fields, zap.Uintp(key, value))
+	return l
+}
+
+func (l ZapLog) Uints(key string, value []uint) Log {
+	l.fields = append(l.fields, zap.Uints(key, value))
 	return l
 }
 

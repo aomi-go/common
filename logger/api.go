@@ -67,6 +67,10 @@ type Log interface {
 	Int8p(key string, value *int8) Log
 	Int8s(key string, value []int8) Log
 
+	Int(key string, value int) Log
+	Intp(key string, value *int) Log
+	Ints(key string, value []int) Log
+
 	String(key string, value string) Log
 	Stringp(key string, value *string) Log
 	Strings(key string, value []string) Log
@@ -90,6 +94,10 @@ type Log interface {
 	Uint8(key string, value uint8) Log
 	Uint8p(key string, value *uint8) Log
 	Uint8s(key string, value []uint8) Log
+
+	Uint(key string, value uint) Log
+	Uintp(key string, value *uint) Log
+	Uints(key string, value []uint) Log
 
 	Uintptr(key string, value uintptr) Log
 	Uintptrp(key string, value *uintptr) Log
