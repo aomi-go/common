@@ -410,3 +410,15 @@ func (l *ZapLogger) Panic() Log {
 		lvl:      zapcore.PanicLevel,
 	}
 }
+
+func CreateZapCreator(cfg zap.Config) Creator {
+	return func(name string) Logger {
+		provider, err := cfg.Build()
+		if nil != err {
+			panic(err)
+		}
+		provider = provider.Named(name)
+		defer provider.Sync()
+		return NewZapLogger(provider)
+	}
+}
