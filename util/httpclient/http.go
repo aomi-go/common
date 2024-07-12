@@ -23,14 +23,14 @@ var (
 )
 
 type WebClientOptions struct {
-	BaseUrl  string         `json:"base_url"`
-	Timeout  *time.Duration `json:"timeout"`
-	ProxyUrl string         `json:"proxy_url"`
-	TLS      *TLS           `json:"tls"`
+	BaseUrl  string         `json:"base_url" yaml:"base_url"`
+	Timeout  *time.Duration `json:"timeout" yaml:"timeout"`
+	ProxyUrl string         `json:"proxy_url" yaml:"proxy_url"`
+	TLS      *TLS           `json:"tls" yaml:"tls"`
 }
 
 type TLS struct {
-	InsecureSkipVerify bool `json:"insecure_skip_verify" desc:"Skip SSL verification"`
+	InsecureSkipVerify bool `json:"insecure_skip_verify" yaml:"insecure_skip_verify" desc:"Skip SSL verification"`
 }
 
 func NewWebClient(options *WebClientOptions) *WebClient {
