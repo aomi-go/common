@@ -1,4 +1,4 @@
-package slice
+package slices
 
 func FindFirst[T any](v []T, predicate func(item T) bool) (T, bool) {
 	for _, item := range v {
@@ -11,7 +11,7 @@ func FindFirst[T any](v []T, predicate func(item T) bool) (T, bool) {
 }
 
 func Find[T any](v []T, predicate func(item T) bool) []T {
-	var result []T
+	var result = make([]T, 0)
 	for _, item := range v {
 		if predicate(item) {
 			result = append(result, item)
@@ -22,9 +22,9 @@ func Find[T any](v []T, predicate func(item T) bool) []T {
 }
 
 func Map[T any, R any](s []T, f func(T) R) []R {
-	var result []R
-	for _, item := range s {
-		result = append(result, f(item))
+	var result = make([]R, 0, len(s))
+	for i, item := range s {
+		result[i] = f(item)
 	}
 	return result
 }
