@@ -22,7 +22,7 @@ func Find[T any](v []T, predicate func(item T) bool) []T {
 }
 
 func Map[T any, R any](s []T, f func(T) R) []R {
-	var result = make([]R, 0, len(s))
+	var result = make([]R, len(s))
 	for i, item := range s {
 		result[i] = f(item)
 	}
