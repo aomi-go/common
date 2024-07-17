@@ -421,6 +421,10 @@ type ZapLoggerFactory struct {
 	cfg zap.Config
 }
 
+func (z *ZapLoggerFactory) SetCfg(cfg zap.Config) {
+	z.cfg = cfg
+}
+
 func (z *ZapLoggerFactory) Get(name string) Logger {
 	provider := z.get(name)
 	return &ZapLogger{provider: provider}
