@@ -411,14 +411,35 @@ func (l *ZapLogger) Panic() Log {
 	}
 }
 
-func CreateZapCreator(cfg zap.Config) Creator {
-	return func(name string) Logger {
-		provider, err := cfg.Build()
-		if nil != err {
-			panic(err)
-		}
-		provider = provider.Named(name)
-		defer provider.Sync()
-		return NewZapLogger(provider)
+func NewZapLoggerFactory(cfg zap.Config) *ZapLoggerFactory {
+	return &ZapLoggerFactory{
+		cfg: cfg,
 	}
+}
+
+type ZapLoggerFactory struct {
+	cfg zap.Config
+}
+
+func (z *ZapLoggerFactory) Get(name string) Logger {
+	provider := z.get(name)
+	return &ZapLogger{provider: provider}
+}
+
+func (z *ZapLoggerFactory) Reset(loggers map[string]Logger) {
+	for name, l := range loggers {
+		if zl, ok := l.(*ZapLogger); ok {
+			zl.provider = z.get(name)
+		}
+	}
+}
+
+func (z *ZapLoggerFactory) get(name string) *zap.Logger {
+	provider, err := z.cfg.Build()
+	if nil != err {
+		panic(err)
+	}
+	provider = provider.Named(name)
+	defer provider.Sync()
+	return provider
 }

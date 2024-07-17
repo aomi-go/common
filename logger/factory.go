@@ -1,20 +1,36 @@
 package logger
 
-var Factory = &factory{}
-
-type Creator func(name string) Logger
-
-type factory struct {
-	creator Creator
+type Factory interface {
+	Get(name string) Logger
+	// Reset 重置已知logger
+	Reset(loggers map[string]Logger)
 }
 
-func (f *factory) SetCreator(creator Creator) {
-	f.creator = creator
+var (
+	factory Factory
+	loggers = make(map[string]Logger)
+)
+
+func SetFactory(f Factory) {
+	factory = f
 }
 
-func (f *factory) GetLogger(name string) Logger {
-	if nil == f.creator {
-		panic("logger factory creator is nil, please set it first: logger.Factory.SetCreator()")
+func GetLogger(name string) Logger {
+	if logger, ok := loggers[name]; ok {
+		return logger
 	}
-	return f.creator(name)
+
+	if nil == factory {
+		panic("logger factory is nil, please set it first: logger.SetCreator()")
+	}
+
+	l := factory.Get(name)
+	loggers[name] = l
+	return l
+}
+func ResetLogger() {
+	if nil == factory {
+		panic("logger factory is nil, please set it first: logger.SetFactory()")
+	}
+	factory.Reset(loggers)
 }
