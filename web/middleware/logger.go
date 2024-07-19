@@ -21,13 +21,11 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 		if raw != "" {
 			path = path + "?" + raw
 		}
-		log.Debug().
-			Int("statusCode", c.Writer.Status()).
+		log.Int("statusCode", c.Writer.Status()).
 			Duration("latency", stop.Sub(start)).
 			String("clientIP", c.ClientIP()).
 			String("method", c.Request.Method).
 			String("path", path).
-			Msg(c.Errors.ByType(gin.ErrorTypePrivate).String())
-
+			Debug(c.Errors.ByType(gin.ErrorTypePrivate).String())
 	}
 }
