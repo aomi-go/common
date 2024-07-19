@@ -46,6 +46,12 @@ func (l ZapLog) Err(err error) logger.Log {
 }
 
 func (l ZapLog) Ctx(ctx context.Context) logger.Log {
+	traceId := ctx.Value(logger.TraceIdCtxKey)
+	if nil != traceId {
+		if i, ok := traceId.(string); ok {
+			l.fields = append(l.fields, zap.String("traceId", i))
+		}
+	}
 	return l
 }
 

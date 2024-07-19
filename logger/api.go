@@ -18,6 +18,8 @@ const (
 	FatalLevel
 )
 
+const TraceIdCtxKey = "traceId"
+
 type Log interface {
 	Err(err error) Log
 	Ctx(ctx context.Context) Log
