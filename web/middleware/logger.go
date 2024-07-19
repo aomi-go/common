@@ -26,6 +26,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 			String("clientIP", c.ClientIP()).
 			String("method", c.Request.Method).
 			String("path", path).
+			Ctx(c).
 			Debug(c.Errors.ByType(gin.ErrorTypePrivate).String())
 	}
 }
