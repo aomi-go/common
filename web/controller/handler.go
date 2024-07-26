@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"errors"
 	"fmt"
 	"github.com/aomi-go/common/exception"
 	"github.com/aomi-go/common/exception/errorcode"
@@ -31,51 +30,57 @@ func DefaultSuccessHandler() SuccessHandler {
 	}
 }
 
-func DefaultErrHandler() ErrorHandler {
+// CreateErrHandler 创建错误处理器
+// @param err2msg 错误转换器, 返回值：http状态码、错误数据、是否成功处理
+func CreateErrHandler(err2msg func(c *gin.Context, payload any, err error) (int, any, bool)) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
 		reqId := c.GetHeader(http2.RequestId)
 
-		var validErr validator.ValidationErrors
-		if errors.As(err, &validErr) {
-			errorMsgs := make(map[string]string)
-			for _, e := range validErr {
-				fieldName := e.Field()
-				tagName := e.Tag()
-				errorMessage := fmt.Sprintf("字段 %s 校验失败，条件：%s", fieldName, tagName)
-				errorMsgs[fieldName] = errorMessage
-			}
+		var httpStatus int
+		var p any
+		var handled bool
 
-			c.JSON(http.StatusOK, &dto.Result{
-				Status:    errorcode.ParamsError,
-				Describe:  "params error",
-				Payload:   errorMsgs,
-				RequestId: reqId,
-			})
-			return
+		if nil != err2msg {
+			httpStatus, p, handled = err2msg(c, payload, err)
 		}
 
-		var e *exception.ServiceError
-		if errors.As(err, &e) {
-			p := e.Payload
-			if e.Code == errorcode.PartialSuccess {
-				p = payload
-			}
+		if !handled {
+			httpStatus = http.StatusOK
 
-			c.JSON(http.StatusOK, dto.Result{
-				Status:    e.Code,
-				Describe:  e.Msg,
-				Payload:   p,
-				RequestId: reqId,
-			})
-			return
+			switch e := err.(type) {
+			case validator.ValidationErrors:
+				errorMsgs := make(map[string]string)
+				for _, item := range e {
+					fieldName := item.Field()
+					tagName := item.Tag()
+					errorMessage := fmt.Sprintf("字段 %s 校验失败，条件：%s", fieldName, tagName)
+					errorMsgs[fieldName] = errorMessage
+				}
+
+				p = dto.Result{
+					Status:    errorcode.ParamsError,
+					Describe:  "params error",
+					Payload:   errorMsgs,
+					RequestId: reqId,
+				}
+			case *exception.ServiceError:
+				p = dto.Result{
+					Status:    e.Code,
+					Describe:  e.Msg,
+					Payload:   p,
+					RequestId: reqId,
+				}
+			default:
+				p = dto.Result{
+					Status:    errorcode.EXCEPTION,
+					Describe:  err.Error(),
+					RequestId: reqId,
+				}
+			}
 		}
 
-		c.JSON(http.StatusOK, dto.Result{
-			Status:    errorcode.EXCEPTION,
-			Describe:  err.Error(),
-			RequestId: reqId,
-		})
+		c.JSON(httpStatus, p)
 	}
 }
 
