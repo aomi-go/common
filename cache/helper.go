@@ -48,3 +48,7 @@ func (b Helper) Set() error {
 func (b Helper) Get(value interface{}) error {
 	return b.c.Get(b.ctx, b.entry.Key, value)
 }
+
+func (b Helper) Del() error {
+	return b.c.Delete(b.ctx, b.entry.Key)
+}
