@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aomi-go/common/exception"
 	"github.com/aomi-go/common/exception/errorcode"
+	lerrors "github.com/aomi-go/common/lang/errors"
 	"github.com/aomi-go/common/web/dto"
 	http2 "github.com/aomi-go/common/web/http"
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,10 @@ func DefaultSuccessHandler() SuccessHandler {
 
 // CreateErrHandler 创建错误处理器
 // @param err2msg 错误转换器, 返回值：http状态码、错误数据、是否成功处理
-func CreateErrHandler(err2msg func(c *gin.Context, payload any, err error) (int, any, bool)) ErrorHandler {
+func CreateErrHandler(
+	err2msg func(c *gin.Context, payload any, err error) (int, any, bool),
+	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload any) (int, any),
+) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
 		reqId := c.GetHeader(http2.RequestId)
@@ -64,6 +68,12 @@ func CreateErrHandler(err2msg func(c *gin.Context, payload any, err error) (int,
 					Payload:   errorMsgs,
 					RequestId: reqId,
 				}
+			case *lerrors.IllegalArgumentError:
+				p = dto.Result{
+					Status:    errorcode.ParamsError,
+					Describe:  e.Msg,
+					RequestId: reqId,
+				}
 			case *exception.ServiceError:
 				p = dto.Result{
 					Status:    e.Code,
@@ -78,6 +88,10 @@ func CreateErrHandler(err2msg func(c *gin.Context, payload any, err error) (int,
 					RequestId: reqId,
 				}
 			}
+		}
+
+		if nil != postHandler {
+			httpStatus, p = postHandler(c, payload, err, httpStatus, p)
 		}
 
 		c.JSON(httpStatus, p)
