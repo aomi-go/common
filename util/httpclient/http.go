@@ -54,7 +54,7 @@ func NewWebClient(options *WebClientOptions) *WebClient {
 		if response.IsError() {
 			return &ApiError{
 				Code:         EXCEPTION,
-				Msg:          "HTTP请求处理失败",
+				Msg:          response.String(),
 				HttpResponse: response,
 			}
 		}
