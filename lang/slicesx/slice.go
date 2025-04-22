@@ -1,4 +1,4 @@
-package slices
+package slicesx
 
 func FindFirst[T any](v []T, predicate func(item T) bool) (T, bool) {
 	for _, item := range v {
