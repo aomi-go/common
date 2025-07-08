@@ -5,6 +5,10 @@ import (
 	"github.com/aomi-go/common/exception/errorcode"
 )
 
+var (
+	ServerInternalError = NewError("server internal error", nil)
+)
+
 type ServiceError struct {
 	// Code 错误代码
 	Code string
