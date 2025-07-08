@@ -21,7 +21,7 @@ type Logger struct {
 func (l *Logger) SetProvider(provider interface{}) {
 	l.provider = provider.(*zap.Logger)
 	l.NewLog = func() logger.Log {
-		return ZapLog{
+		return Log{
 			fields:   make([]zap.Field, 0),
 			provider: l.provider,
 		}
