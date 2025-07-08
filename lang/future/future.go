@@ -8,6 +8,7 @@ import (
 type TaskFunc[T any] func(idx int, vc chan<- T, ec chan<- error, done chan<- struct{})
 
 /**
+ * AllOf
  * @Description: 并发执行多个任务，等待所有任务完成后返回结果
  * @param tasks 任务列表
  * @return []any 所有任务的返回值

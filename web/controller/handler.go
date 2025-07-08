@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/aomi-go/common/exception"
 	"github.com/aomi-go/common/exception/errorcode"
-	lerrors "github.com/aomi-go/common/lang/errors"
+	lerrors "github.com/aomi-go/common/lang/errorx"
 	"github.com/aomi-go/common/web/dto"
 	http2 "github.com/aomi-go/common/web/http"
 	"github.com/gin-gonic/gin"

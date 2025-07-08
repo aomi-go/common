@@ -1,4 +1,4 @@
-package errors
+package errorx
 
 func NewIllegalArgumentError(msg string) *IllegalArgumentError {
 	return &IllegalArgumentError{Msg: msg}
