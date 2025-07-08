@@ -6,22 +6,6 @@ import (
 	"time"
 )
 
-type Level int
-
-const (
-	DebugLevel Level = iota - 1
-	InfoLevel
-	WarnLevel
-	ErrorLevel
-	DPanicLevel
-	PanicLevel
-	FatalLevel
-)
-
-type traceId struct{}
-
-var TraceIdCtxKey = traceId{}
-
 type Log interface {
 	Err(err error) Log
 	Ctx(ctx context.Context) Log

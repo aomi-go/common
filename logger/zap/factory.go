@@ -5,7 +5,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func NewZapLoggerFactory(cfg zap.Config, options ...zap.Option) (*LoggerFactory, error) {
+func NewZapLoggerCreator(cfg zap.Config, options ...zap.Option) (logger.Creator, error) {
 	newOptions := []zap.Option{
 		zap.AddCallerSkip(2),
 	}
@@ -16,20 +16,9 @@ func NewZapLoggerFactory(cfg zap.Config, options ...zap.Option) (*LoggerFactory,
 	if nil != err {
 		return nil, err
 	}
-	return &LoggerFactory{
-		provider: provider,
+
+	return func(name string) logger.Logger {
+		l := provider.Named(name)
+		return NewZapLogger(l)
 	}, nil
-}
-
-type LoggerFactory struct {
-	provider *zap.Logger
-}
-
-func (z *LoggerFactory) Get(name string) logger.Logger {
-	provider := z.provider.Named(name)
-	return NewZapLogger(provider)
-}
-
-func (z *LoggerFactory) GetProvider() interface{} {
-	return z.provider
 }

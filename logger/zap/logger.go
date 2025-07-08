@@ -7,23 +7,18 @@ import (
 
 func NewZapLogger(provider *zap.Logger) *Logger {
 	l := &Logger{
-		BaseLogger: &logger.BaseLogger{},
+		BaseLogger: &logger.BaseLogger{
+			NewLog: func() logger.Log {
+				return Log{
+					provider: provider,
+					fields:   make([]zap.Field, 0),
+				}
+			},
+		},
 	}
-	l.SetProvider(provider)
 	return l
 }
 
 type Logger struct {
 	*logger.BaseLogger
-	provider *zap.Logger
-}
-
-func (l *Logger) SetProvider(provider interface{}) {
-	l.provider = provider.(*zap.Logger)
-	l.NewLog = func() logger.Log {
-		return Log{
-			fields:   make([]zap.Field, 0),
-			provider: l.provider,
-		}
-	}
 }
