@@ -68,7 +68,19 @@ func ToDecimal(value interface{}) decimal.Decimal {
 			return decimal.Zero
 		}
 		return d
+	case SerializableString:
+		d, err := decimal.NewFromString(v.String())
+		if err != nil {
+			return decimal.Zero
+		}
+		return d
+	case decimal.Decimal:
+		return v
 	default:
 		return decimal.Zero
 	}
+}
+
+type SerializableString interface {
+	String() string
 }
