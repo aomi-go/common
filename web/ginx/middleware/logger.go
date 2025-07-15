@@ -22,7 +22,7 @@ func LoggerMiddleware(log logger.Logger) gin.HandlerFunc {
 			path = path + "?" + raw
 		}
 		log.Int("statusCode", c.Writer.Status()).
-			Duration("latency", stop.Sub(start)).
+			Duration("duration", stop.Sub(start)).
 			String("clientIP", c.ClientIP()).
 			String("method", c.Request.Method).
 			String("path", path).
