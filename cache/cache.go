@@ -23,3 +23,6 @@ type Cache interface {
 	Delete(ctx context.Context, key string) error
 	Exists(ctx context.Context, key string) bool
 }
+
+type MemoryCache Cache
+type RedisCache Cache
