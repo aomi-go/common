@@ -57,7 +57,7 @@ func DefaultSuccessHandler() SuccessHandler {
 // CreateErrHandler 创建错误处理器
 // @param err2msg 错误转换器, 返回值：http状态码、错误数据、是否成功处理
 func CreateErrHandler(
-	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload *dto.Result) (int, any),
+	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload *dto.Result),
 ) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
@@ -94,11 +94,10 @@ func CreateErrHandler(
 			}
 		}
 
-		var finalPayload any = result
-		if nil != postHandler {
-			httpStatus, finalPayload = postHandler(c, payload, err, httpStatus, result)
+		if nil == postHandler {
+			c.JSON(httpStatus, result)
+		} else {
+			postHandler(c, payload, err, httpStatus, result)
 		}
-
-		c.JSON(httpStatus, finalPayload)
 	}
 }
