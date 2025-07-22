@@ -57,12 +57,12 @@ func DefaultSuccessHandler() SuccessHandler {
 // CreateErrHandler 创建错误处理器
 // @param err2msg 错误转换器, 返回值：http状态码、错误数据、是否成功处理
 func CreateErrHandler(
-	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload any) (int, any),
+	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload *dto.Result) (int, any),
 ) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
 		var httpStatus = http.StatusOK
-		var p any
+		var result *dto.Result
 
 		httpStatus = http.StatusOK
 
@@ -76,28 +76,29 @@ func CreateErrHandler(
 				errorMsgs[fieldName] = errorMessage
 			}
 
-			p = dto.Result{
+			result = &dto.Result{
 				Status:   errorx.ParamsError,
 				Describe: "params error",
 				Payload:  errorMsgs,
 			}
 		case *errorx.ServiceError:
-			p = dto.Result{
+			result = &dto.Result{
 				Status:   e.Code,
 				Describe: e.Msg,
-				Payload:  p,
+				Payload:  e.Payload,
 			}
 		default:
-			p = dto.Result{
+			result = &dto.Result{
 				Status:   errorx.EXCEPTION,
 				Describe: "server internal error",
 			}
 		}
 
+		var finalPayload any = result
 		if nil != postHandler {
-			httpStatus, p = postHandler(c, payload, err, httpStatus, p)
+			httpStatus, finalPayload = postHandler(c, payload, err, httpStatus, result)
 		}
 
-		c.JSON(httpStatus, p)
+		c.JSON(httpStatus, finalPayload)
 	}
 }
