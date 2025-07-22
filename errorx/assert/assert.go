@@ -1,17 +1,17 @@
 package assert
 
-import "github.com/aomi-go/common/exception"
+import "github.com/aomi-go/common/errorx"
 
 func IsNil(v any, msg string) error {
 	if v != nil {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	return nil
 }
 
 func NotNil(v any, msg string) error {
 	if v == nil {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	return nil
 }
@@ -37,7 +37,7 @@ func IsEmpty(v any, msg string) error {
 // 支持类型: 数组、切片、字典、字符串
 func IsNotEmpty(v any, msg string) error {
 	if nil == v {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	switch v.(type) {
 	case string:
@@ -54,39 +54,39 @@ func StrIsEmpty(v string, msg string) error {
 	if v == "" {
 		return nil
 	}
-	return exception.NewParamsError(msg, nil)
+	return errorx.NewParamsError().WithMsg(msg)
 }
 
 func StrIsNotEmpty(v string, msg string) error {
 	if v == "" {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	return nil
 }
 
-func SliceIsEmpty(v []any, msg string) error {
+func SliceIsEmpty[T any](v []T, msg string) error {
 	if nil == v || len(v) == 0 {
 		return nil
 	}
-	return exception.NewParamsError(msg, nil)
+	return errorx.NewParamsError().WithMsg(msg)
 }
-func SliceIsNotEmpty(v []any, msg string) error {
+func SliceIsNotEmpty[T interface{}](v []T, msg string) error {
 	if nil == v || len(v) == 0 {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	return nil
 }
 
-func MapIsEmpty(v map[any]any, msg string) error {
+func MapIsEmpty[K comparable, V any](v map[K]V, msg string) error {
 	if nil == v || len(v) == 0 {
 		return nil
 	}
-	return exception.NewParamsError(msg, nil)
+	return errorx.NewParamsError().WithMsg(msg)
 }
 
-func MapIsNotEmpty(v map[any]any, msg string) error {
+func MapIsNotEmpty[K comparable, V any](v map[K]V, msg string) error {
 	if nil == v || len(v) == 0 {
-		return exception.NewParamsError(msg, nil)
+		return errorx.NewParamsError().WithMsg(msg)
 	}
 	return nil
 }

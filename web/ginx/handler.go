@@ -2,9 +2,8 @@ package ginx
 
 import (
 	"fmt"
-	"github.com/aomi-go/common/exception"
+	lerrors "github.com/aomi-go/common/errorx"
 	"github.com/aomi-go/common/exception/errorcode"
-	lerrors "github.com/aomi-go/common/lang/errorx"
 	"github.com/aomi-go/common/web/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -88,7 +87,7 @@ func CreateErrHandler(
 				Status:   errorcode.ParamsError,
 				Describe: e.Msg,
 			}
-		case *exception.ServiceError:
+		case *errx.ServiceError:
 			p = dto.Result{
 				Status:   e.Code,
 				Describe: e.Msg,
