@@ -28,3 +28,9 @@ func Map[T any, R any](s []T, f func(T) R) []R {
 	}
 	return result
 }
+
+func MapToAny[T any](s []T) []interface{} {
+	return Map(s, func(item T) interface{} {
+		return item
+	})
+}
