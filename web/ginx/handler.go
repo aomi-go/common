@@ -2,8 +2,7 @@ package ginx
 
 import (
 	"fmt"
-	lerrors "github.com/aomi-go/common/errorx"
-	"github.com/aomi-go/common/exception/errorcode"
+	"github.com/aomi-go/common/errorx"
 	"github.com/aomi-go/common/web/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -49,7 +48,7 @@ func HandlerResponse(c *gin.Context, payload any, err error) {
 func DefaultSuccessHandler() SuccessHandler {
 	return func(c *gin.Context, payload any) {
 		c.JSON(http.StatusOK, dto.Result{
-			Status:  errorcode.SUCCESS,
+			Status:  errorx.SUCCESS,
 			Payload: payload,
 		})
 	}
@@ -62,7 +61,7 @@ func CreateErrHandler(
 ) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
-		var httpStatus int = http.StatusOK
+		var httpStatus = http.StatusOK
 		var p any
 
 		httpStatus = http.StatusOK
@@ -78,16 +77,11 @@ func CreateErrHandler(
 			}
 
 			p = dto.Result{
-				Status:   errorcode.ParamsError,
+				Status:   errorx.ParamsError,
 				Describe: "params error",
 				Payload:  errorMsgs,
 			}
-		case *lerrors.IllegalArgumentError:
-			p = dto.Result{
-				Status:   errorcode.ParamsError,
-				Describe: e.Msg,
-			}
-		case *errx.ServiceError:
+		case *errorx.ServiceError:
 			p = dto.Result{
 				Status:   e.Code,
 				Describe: e.Msg,
@@ -95,7 +89,7 @@ func CreateErrHandler(
 			}
 		default:
 			p = dto.Result{
-				Status:   errorcode.EXCEPTION,
+				Status:   errorx.EXCEPTION,
 				Describe: "server internal error",
 			}
 		}
