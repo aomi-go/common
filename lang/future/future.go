@@ -1,11 +1,11 @@
 package future
 
 import (
-	"fmt"
-	"sync"
+	"context"
+	"golang.org/x/sync/errgroup"
 )
 
-type TaskFunc[T any] func(idx int, vc chan<- T, ec chan<- error, done chan<- struct{})
+type TaskFunc[T any] func(ctx context.Context) (T, error)
 
 /**
  * AllOf
@@ -15,53 +15,28 @@ type TaskFunc[T any] func(idx int, vc chan<- T, ec chan<- error, done chan<- str
  * @return error 最后一个错误信息
  * @return []error 所有任务的错误
  */
-func AllOf(tasks ...TaskFunc[any]) ([]any, error, []error) {
-	var wg sync.WaitGroup
+func AllOf(ctx context.Context, tasks ...TaskFunc[any]) ([]any, error, []error) {
+	eg, ctx := errgroup.WithContext(ctx)
 
-	valueChans := make([]chan any, len(tasks))
-	errChans := make([]chan error, len(tasks))
-	done := make(chan struct{})
+	results := make([]any, len(tasks))
+	errs := make([]error, len(tasks))
 
-	for i, item := range tasks {
-		valueChans[i] = make(chan any, 1)
-		errChans[i] = make(chan error, 1)
-		wg.Add(1)
-		go func(idx int, task TaskFunc[any]) {
-			defer wg.Done()
-			select {
-			case <-done:
-				fmt.Println("done")
-				return
-			default:
-				task(idx, valueChans[idx], errChans[idx], done)
+	for idx, item := range tasks {
+		i, task := idx, item // 避免闭包变量问题
+		eg.Go(func() error {
+			val, err := task(ctx)
+			if err != nil {
+				errs[i] = err
+				return err // 记录到 errgroup 中
 			}
-		}(i, item)
-	}
-	wg.Wait()
-
-	// 读取 所有返回值和错误
-	var results = make([]any, len(tasks))
-	var errs = make([]error, len(tasks))
-	var err error
-
-	for i := range tasks {
-		select {
-		case e := <-errChans[i]:
-			errs[i] = e
-			err = e
-		case val := <-valueChans[i]:
 			results[i] = val
-		default:
-			// 如果某个通道没有数据，可以选择忽略或进行其他处理
-		}
-	}
-	// 关闭所有通道
-	for _, ch := range valueChans {
-		close(ch)
-	}
-	for _, ch := range errChans {
-		close(ch)
+			return nil
+		})
 	}
 
-	return results, err, errs
+	// 返回最后一个错误和所有错误
+	if err := eg.Wait(); err != nil {
+		return results, err, errs
+	}
+	return results, nil, nil
 }

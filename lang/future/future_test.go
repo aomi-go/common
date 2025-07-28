@@ -1,19 +1,29 @@
 package future
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestAllOf(t *testing.T) {
 
-	values, errs, ok := AllOf(
-		func(idx int, vc chan<- any, ec chan<- error, done chan<- struct{}) {
-			vc <- 1
+	values, err, errs := AllOf(context.Background(),
+		func(ctx context.Context) (interface{}, error) {
+			return "1", nil
+		},
+		func(ctx context.Context) (interface{}, error) {
+			return 1, nil
+		},
+		func(ctx context.Context) (interface{}, error) {
+			time.Sleep(time.Second)
+			return nil, errors.New("error")
 		},
 	)
 
 	fmt.Println(values)
 	fmt.Println(errs)
-	fmt.Println(ok)
+	fmt.Println(err)
 }
