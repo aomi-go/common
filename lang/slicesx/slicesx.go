@@ -34,3 +34,14 @@ func MapToAny[T any](s []T) []interface{} {
 		return item
 	})
 }
+
+// ToMap 将切片转换为 map
+func ToMap[T any, K comparable, V any](s []T, keyF func(item T) K, valueF func(item T) V) map[K]V {
+	var result = make(map[K]V)
+	for _, item := range s {
+		key := keyF(item)
+		value := valueF(item)
+		result[key] = value
+	}
+	return result
+}
