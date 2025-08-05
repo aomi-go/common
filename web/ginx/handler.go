@@ -1,6 +1,7 @@
 package ginx
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aomi-go/common/errorx"
 	"github.com/aomi-go/common/web/dto"
@@ -80,6 +81,12 @@ func CreateErrHandler(
 				Status:   errorx.ParamsError,
 				Describe: "params error",
 				Payload:  errorMsgs,
+			}
+		case *json.SyntaxError:
+			result = &dto.Result{
+				Status:   errorx.ParamsError,
+				Describe: e.Error(),
+				Payload:  e.Offset,
 			}
 		case *errorx.ServiceError:
 			result = &dto.Result{
