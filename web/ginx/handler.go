@@ -3,11 +3,12 @@ package ginx
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/aomi-go/common/errorx"
 	"github.com/aomi-go/common/web/dto"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"net/http"
 )
 
 // SuccessHandler 响应处理器
@@ -48,7 +49,7 @@ func HandlerResponse(c *gin.Context, payload any, err error) {
 
 func DefaultSuccessHandler() SuccessHandler {
 	return func(c *gin.Context, payload any) {
-		c.JSON(http.StatusOK, dto.Result{
+		c.JSON(http.StatusOK, dto.Result[any]{
 			Status:  errorx.SUCCESS,
 			Payload: payload,
 		})
@@ -58,12 +59,12 @@ func DefaultSuccessHandler() SuccessHandler {
 // CreateErrHandler 创建错误处理器
 // @param err2msg 错误转换器, 返回值：http状态码、错误数据、是否成功处理
 func CreateErrHandler(
-	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload *dto.Result),
+	postHandler func(c *gin.Context, payload any, err error, httpStatus int, finalPayload *dto.Result[any]),
 ) ErrorHandler {
 	return func(c *gin.Context, payload any, err error) {
 
 		var httpStatus = http.StatusOK
-		var result *dto.Result
+		var result *dto.Result[any]
 
 		httpStatus = http.StatusOK
 
@@ -77,25 +78,25 @@ func CreateErrHandler(
 				errorMsgs[fieldName] = errorMessage
 			}
 
-			result = &dto.Result{
+			result = &dto.Result[any]{
 				Status:   errorx.ParamsError,
 				Describe: "params error",
 				Payload:  errorMsgs,
 			}
 		case *json.SyntaxError:
-			result = &dto.Result{
+			result = &dto.Result[any]{
 				Status:   errorx.ParamsError,
 				Describe: e.Error(),
 				Payload:  e.Offset,
 			}
 		case *errorx.ServiceError:
-			result = &dto.Result{
+			result = &dto.Result[any]{
 				Status:   e.Code,
 				Describe: e.Msg,
 				Payload:  e.Payload,
 			}
 		default:
-			result = &dto.Result{
+			result = &dto.Result[any]{
 				Status:   errorx.EXCEPTION,
 				Describe: "server internal error",
 			}
