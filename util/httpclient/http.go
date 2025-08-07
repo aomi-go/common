@@ -50,18 +50,6 @@ func NewWebClient(options *WebClientOptions) *WebClient {
 		client.SetTLSClientConfig(&cfg)
 	}
 
-	client.OnAfterResponse(func(client *resty.Client, response *resty.Response) error {
-		if response.IsError() {
-			return &ApiError{
-				Code:         EXCEPTION,
-				Msg:          response.String(),
-				HttpResponse: response,
-			}
-		}
-
-		return nil
-	})
-
 	return &WebClient{
 		options:  options,
 		provider: client,
