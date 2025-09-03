@@ -42,3 +42,11 @@ func ComputeIfAbsent[K comparable, V any](m map[K]V, key K, createValueFunc func
 	m[key] = v
 	return v
 }
+
+func ValueToAny[K comparable, V any](m map[K]V) map[K]any {
+	var result = make(map[K]any)
+	for k, v := range m {
+		result[k] = v
+	}
+	return result
+}
