@@ -16,6 +16,8 @@ const (
 	SignatureError = "3007"
 	// ConfigError is used when the configuration is invalid or missing.
 	ConfigError = "3008"
+	MinSize     = "3009"
+	MaxSize     = "3010"
 
 	// ResourceExist is used when the requested resource already exists.
 	ResourceExist = "3011"
