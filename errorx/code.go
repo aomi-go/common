@@ -24,6 +24,9 @@ const (
 	// ResourceNotExist is used when the requested resource does not exist.
 	ResourceNotExist = "3012"
 
+	FileTypeNotSupport = "3013"
+	FileCorrupted      = "3014"
+
 	// Unauthorized is used when the user is not authenticated.
 	Unauthorized   = "3210"
 	BadCredentials = "3211"
