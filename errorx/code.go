@@ -27,6 +27,8 @@ const (
 	FileTypeNotSupport = "3013"
 	FileCorrupted      = "3014"
 
+	ToManyRequest = "3015"
+
 	// Unauthorized is used when the user is not authenticated.
 	Unauthorized   = "3210"
 	BadCredentials = "3211"
