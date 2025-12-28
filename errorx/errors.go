@@ -52,3 +52,7 @@ func NewResourceNotExist() *ServiceError {
 func NewConfigError() *ServiceError {
 	return NewServiceError(ConfigError)
 }
+
+func NewToManyRequest() *ServiceError {
+	return NewServiceError(ToManyRequest)
+}
