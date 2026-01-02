@@ -56,3 +56,22 @@ func NewConfigError() *ServiceError {
 func NewToManyRequest() *ServiceError {
 	return NewServiceError(ToManyRequest)
 }
+
+func NewMinValue() *ServiceError {
+	return NewServiceError(MinValue)
+}
+func NewMaxValue() *ServiceError {
+	return NewServiceError(MaxValue)
+}
+func NewMinSize() *ServiceError {
+	return NewServiceError(MinSize)
+}
+func NewMaxSize() *ServiceError {
+	return NewServiceError(MaxSize)
+}
+func NewMinLimit() *ServiceError {
+	return NewServiceError(MinLimit)
+}
+func NewMaxLimit() *ServiceError {
+	return NewServiceError(MaxLimit)
+}
