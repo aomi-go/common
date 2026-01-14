@@ -25,4 +25,7 @@ type Cache interface {
 }
 
 type MemoryCache Cache
+type PersistCache Cache
+
 type RedisCache Cache
+type ValKeyCache Cache
