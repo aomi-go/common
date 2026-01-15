@@ -2,74 +2,82 @@ package valkey
 
 import (
 	"context"
+	"time"
 
 	"github.com/aomi-go/common/cache"
-	glide "github.com/valkey-io/valkey-glide/go/v2"
-	"github.com/valkey-io/valkey-glide/go/v2/options"
-
-	"time"
+	"github.com/valkey-io/valkey-go"
 )
 
-func NewCache(client *glide.Client) *Cache {
+func NewCache(client valkey.Client) *Cache {
 	return &Cache{
 		client: client,
 	}
 }
 
 type Cache struct {
-	client *glide.Client
+	client valkey.Client
 }
 
 func (c *Cache) Get(ctx context.Context, key string, value interface{}) error {
-	result, err := c.client.Get(ctx, key)
-	if nil != err {
-		return err
+	resp := c.client.Do(ctx, c.client.B().Get().Key(key).Build())
+	if resp.Error() != nil {
+		if valkey.IsValkeyNil(resp.Error()) {
+			return cache.ErrEntryNotFound
+		}
+		return resp.Error()
 	}
-	if !result.IsNil() {
-		return cache.DeserializeWithStr(result.Value(), value)
-	}
-	return err
+
+	return cache.DeserializeWithStr(resp.String(), value)
 }
 
 func (c *Cache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
-	buf, err := cache.Serialize(value)
+	v, err := cache.Serialize(value)
 	if nil != err {
 		return err
 	}
-	_, err = c.client.SetWithOptions(ctx, key, buf.String(), options.SetOptions{
-		Expiry: options.NewExpiryIn(ttl),
-	})
+
+	cmd := c.client.B().
+		Set().
+		Key(key).
+		Value(v.String()).
+		Ex(ttl).
+		Build()
+	_, err = c.client.Do(ctx, cmd).ToAny()
 	return err
 }
 
 func (c *Cache) Increment(ctx context.Context, key string, value int64, ttl time.Duration) (int64, error) {
-	v, err := c.client.IncrBy(ctx, key, value)
-	if nil != err {
+	res, err := c.client.Do(ctx, c.client.B().Incrby().Key(key).Increment(value).Build()).AsInt64()
+	if err != nil {
 		return 0, err
 	}
+
 	if ttl > 0 {
-		_, _ = c.client.Expire(ctx, key, ttl)
+		_ = c.client.Do(ctx, c.client.B().Expire().Key(key).Seconds(int64(ttl.Seconds())).Build())
 	}
-	return v, err
+	return res, nil
 }
 
 func (c *Cache) IncrementByFloat(ctx context.Context, key string, value float64, ttl time.Duration) (float64, error) {
-	v, err := c.client.IncrByFloat(ctx, key, value)
-	if nil != err {
+	res, err := c.client.Do(ctx, c.client.B().Incrbyfloat().Key(key).Increment(value).Build()).AsFloat64()
+	if err != nil {
 		return 0, err
 	}
+
 	if ttl > 0 {
-		_, _ = c.client.Expire(ctx, key, ttl)
+		_ = c.client.Do(ctx, c.client.B().Expire().Key(key).Seconds(int64(ttl.Seconds())).Build())
 	}
-	return v, err
+	return res, nil
 }
 
 func (c *Cache) Delete(ctx context.Context, key string) error {
-	_, err := c.client.Del(ctx, []string{key})
-	return err
+	return c.client.Do(ctx, c.client.B().Del().Key(key).Build()).Error()
 }
 
 func (c *Cache) Exists(ctx context.Context, key string) bool {
-	result, err := c.client.Exists(ctx, []string{key})
-	return nil == err && result == 1
+	res, err := c.client.Do(ctx, c.client.B().Exists().Key(key).Build()).AsInt64()
+	if err != nil {
+		return false
+	}
+	return res > 0
 }

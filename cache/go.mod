@@ -1,8 +1,6 @@
 module github.com/aomi-go/common/cache
 
-go 1.23.0
-
-toolchain go1.24.4
+go 1.24.9
 
 require (
 	github.com/allegro/bigcache/v3 v3.1.0
@@ -17,8 +15,9 @@ require (
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	github.com/valkey-io/valkey-glide/go/v2 v2.2.5 // indirect
+	github.com/valkey-io/valkey-go v1.0.70 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	golang.org/x/net v0.42.0 // indirect
-	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/net v0.48.0 // indirect
+	golang.org/x/sys v0.39.0 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 )
