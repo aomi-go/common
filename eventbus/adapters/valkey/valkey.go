@@ -1,4 +1,4 @@
-package adapters
+package valkey
 
 import (
 	"context"
@@ -6,8 +6,11 @@ import (
 	"time"
 
 	"github.com/aomi-go/common/eventbus"
+	"github.com/aomi-go/common/logger"
 	"github.com/valkey-io/valkey-go"
 )
+
+var log = logger.GetLogger("adapter_valkey")
 
 func NewValkeyEventBus(
 	parent context.Context,

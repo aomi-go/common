@@ -1,4 +1,4 @@
-package adapters
+package memory
 
 import (
 	"context"
@@ -6,7 +6,10 @@ import (
 	"sync"
 
 	"github.com/aomi-go/common/eventbus"
+	"github.com/aomi-go/common/logger"
 )
+
+var log = logger.GetLogger("adapter_memory")
 
 type subscribeOptions struct {
 	workers int
@@ -37,16 +40,16 @@ func WithBuffer(n int) eventbus.SubscribeOption {
 	}
 }
 
-func NewMemoryEventBus(parent context.Context) *MemoryEventBus {
+func NewMemoryEventBus(parent context.Context) *EventBus {
 	ctx, cancel := context.WithCancel(parent)
-	return &MemoryEventBus{
+	return &EventBus{
 		handlers: make(map[string][]*workerPool),
 		ctx:      ctx,
 		cancel:   cancel,
 	}
 }
 
-type MemoryEventBus struct {
+type EventBus struct {
 	mu       sync.RWMutex
 	handlers map[string][]*workerPool
 	ctx      context.Context
@@ -54,7 +57,7 @@ type MemoryEventBus struct {
 	closed   bool
 }
 
-func (b *MemoryEventBus) Subscribe(
+func (b *EventBus) Subscribe(
 	ctx context.Context,
 	eventName string,
 	handler eventbus.Handler,
@@ -73,7 +76,7 @@ func (b *MemoryEventBus) Subscribe(
 	return nil
 }
 
-func (b *MemoryEventBus) Publish(ctx context.Context, event eventbus.Event) error {
+func (b *EventBus) Publish(ctx context.Context, event eventbus.Event) error {
 	b.mu.RLock()
 	pools := append([]*workerPool(nil), b.handlers[event.GetName()]...)
 	b.mu.RUnlock()
@@ -88,7 +91,7 @@ func (b *MemoryEventBus) Publish(ctx context.Context, event eventbus.Event) erro
 	return nil
 }
 
-func (b *MemoryEventBus) Close() {
+func (b *EventBus) Close() {
 	b.mu.Lock()
 	if b.closed {
 		b.mu.Unlock()
