@@ -3,19 +3,25 @@ package eventbus
 import "time"
 
 type Event interface {
-	Name() string
-	Time() time.Time
+	GetName() string
+	GetTime() time.Time
+	GetData() any
 }
 
-type BaseEvent[T interface{}] struct {
+type BaseEvent struct {
 	EventName string
 	EventAt   time.Time
-	Data      T
+	Data      any
 }
 
-func (e *BaseEvent[T]) Name() string {
-	return e.EventName
+func (b *BaseEvent) GetName() string {
+	return b.EventName
 }
-func (e *BaseEvent[T]) Time() time.Time {
-	return e.EventAt
+
+func (b *BaseEvent) GetTime() time.Time {
+	return b.EventAt
+}
+
+func (b *BaseEvent) GetData() any {
+	return b.Data
 }
