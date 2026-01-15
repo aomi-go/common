@@ -26,8 +26,12 @@ func (c *Cache) Get(ctx context.Context, key string, value interface{}) error {
 		}
 		return resp.Error()
 	}
+	data, err := resp.AsBytes()
+	if nil != err {
+		return err
+	}
 
-	return cache.DeserializeWithStr(resp.String(), value)
+	return cache.Deserialize(data, value)
 }
 
 func (c *Cache) Set(ctx context.Context, key string, value interface{}, ttl time.Duration) error {
