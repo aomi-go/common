@@ -3,6 +3,7 @@ package errorx
 const (
 	SUCCESS        = "0000"
 	PartialSuccess = "0001"
+	UpstreamError  = "2999"
 	EXCEPTION      = "3000"
 
 	// ParamsError is used when the request parameters are invalid or missing.

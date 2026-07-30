@@ -75,3 +75,10 @@ func NewMinLimit() *ServiceError {
 func NewMaxLimit() *ServiceError {
 	return NewServiceError(MaxLimit)
 }
+
+func NewUpstreamError(code, message string) *ServiceError {
+	return NewServiceError(UpstreamError).WithPayload(map[string]string{
+		"code":    code,
+		"message": message,
+	})
+}
